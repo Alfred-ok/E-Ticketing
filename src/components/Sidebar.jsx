@@ -180,6 +180,7 @@ export default function Sidebar() {
   const savedResponse = JSON.parse(localStorage.getItem("loginResponse"));
   const role = savedResponse.data.role //|| "superadmin" // "superadmin" | "admin" | "user"
   console.log(role);
+  
 
   // Define sidebar items per role
   const menuConfig = {
@@ -283,7 +284,7 @@ export default function Sidebar() {
       {/* Footer / Exit */}
       <div className="px-4 pb-4 mt-2">
         <button className="flex items-center gap-2 w-full px-4 py-2 rounded-lg bg-white text-gray-600 hover:bg-gray-100 hover:text-green-600 font-medium transition"
-          onClick={()=>navigate('/login')}
+          onClick={()=>navigate('/')}
         >
           <LogOut size={18} />
           Log Out

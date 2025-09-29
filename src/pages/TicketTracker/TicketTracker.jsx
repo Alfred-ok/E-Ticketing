@@ -22,6 +22,8 @@ import Select from "react-select"; // npm i react-select
 const user = JSON.parse(localStorage.getItem("user"));
 const currentUserId = user?.userId ?? 14; // logged-in userId
 
+console.log(currentUserId);
+
 // --- small badge for assigned users ---
 function UserBadge({ name }) {
   return (

@@ -236,7 +236,7 @@
 
 
 // src/pages/Dashboard.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, } from "react";
 import { motion } from "framer-motion";
 import {
   XAxis,
@@ -247,10 +247,13 @@ import {
   BarChart,
 } from "recharts";
 import { FaTicketAlt, FaHourglassHalf, FaCheckCircle, FaFolderOpen } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   // Fetch tickets from API
   useEffect(() => {
@@ -456,7 +459,7 @@ export default function Dashboard() {
         >
           <div className="flex justify-between p-2 mb-4">
             <h2 className="text-xl font-bold text-white">Support Tickets</h2>
-            <button className="p-3 text-gray-700 bg-green-100 rounded-xl">
+            <button className="p-3 text-gray-700 bg-green-100 rounded-xl" onClick={()=>navigate('/tickets')}>
               View More
             </button>
           </div>
