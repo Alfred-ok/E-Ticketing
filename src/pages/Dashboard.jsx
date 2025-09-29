@@ -39,6 +39,9 @@ export default function Dashboard() {
   const inProgressTickets = tickets.filter((t) => t.status === "In Progress").length;
   const closedTickets = tickets.filter((t) => t.status === "Closed").length;
 
+  const savedResponse = JSON.parse(localStorage.getItem("loginResponse"));
+  const name = savedResponse.data.displayName
+
 
 
 
@@ -52,7 +55,7 @@ export default function Dashboard() {
           transition={{ duration: 0.6 }}
           className="relative bg-gradient-to-r from-green-600 via-emerald-500 to-green-400 text-white rounded-2xl p-8 shadow-lg mb-8"
         >
-          <h2 className="text-3xl font-bold">Welcome back, Alfred 👋</h2>
+          <h2 className="text-3xl font-bold">Welcome back, {name} 👋</h2>
           <p className="mt-2 text-sm opacity-90">
             Here’s your latest support ticket system insights.
           </p>
