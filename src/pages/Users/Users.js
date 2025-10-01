@@ -69,6 +69,7 @@ export default function Users() {
                 <th className="px-4 py-2">Username</th>
                 <th className="px-4 py-2">Display Name</th>
                 <th className="px-4 py-2">Email</th>
+                <th className="px-4 py-2">Role</th>
                 <th className="px-4 py-2">Phone</th>
                 <th className="px-4 py-2">Department</th>
                 <th className="px-4 py-2">Status</th>
@@ -87,6 +88,7 @@ export default function Users() {
                   <td className="px-4 py-2">{user.username}</td>
                   <td className="px-4 py-2">{user.displayName}</td>
                   <td className="px-4 py-2">{user.email}</td>
+                  <td className="px-4 py-2">{user.role}</td>
                   <td className="px-4 py-2">{user.phone}</td>
                   <td className="px-4 py-2">{user.departmentId || "-"}</td>
                   <td className="px-4 py-2">

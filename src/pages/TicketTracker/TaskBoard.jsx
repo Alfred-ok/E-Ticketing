@@ -1,131 +1,215 @@
-import { useEffect, useState, useCallback } from "react";
-import Ticket from "./Ticket";
+// src/components/TaskBoard/TaskBoard.jsx
+
+import React, { useEffect, useMemo, useState } from "react";
 import { FaPlus } from "react-icons/fa";
+
+import Column from "./Column";
+import AddStatusModal from "./AddStatusModal";
+
+const user = JSON.parse(localStorage.getItem("user"));
+const currentUserId = user?.userId ?? 14;
 
 export default function TaskBoard() {
   const [statuses, setStatuses] = useState([]);
   const [ticketsByStatus, setTicketsByStatus] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [allUsers, setAllUsers] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newStatusName, setNewStatusName] = useState("");
 
-  // Fetch statuses + tickets
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("http://192.168.1.253:8594/api/statuses");
-      const statusData = await res.json();
-      setStatuses(statusData);
+  
+  const savedResponse = JSON.parse(localStorage.getItem("loginResponse"));
+  const departmentId = savedResponse?.data?.departmentId; //department Id
+  const role = savedResponse?.data?.role; //role
 
-      const ticketData = {};
-      for (const status of statusData) {
+  console.log(departmentId, role);
+
+  // Fetch statuses
+  useEffect(() => {
+    async function fetchStatuses() {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/statuses`, {
+        headers: { "ngrok-skip-browser-warning": "true" },
+      });
+      const data = await res.json();
+      setStatuses(data || []);
+    }
+    fetchStatuses();
+  }, [reloadKey]);
+
+  // Fetch tickets for each status
+  useEffect(() => {
+    async function fetchTickets() {
+      const group = {};
+      for (const s of statuses) {
+        let url;
+
+        if (role === "Admin" || role === "user") {
+          // Use department-based API
+          url = `${process.env.REACT_APP_API_URL}/api/tickets/bystatus/${s.statusId}/department/${departmentId}`;
+        } else {
+          // Default API
+          url = `${process.env.REACT_APP_API_URL}/api/tickets/bystatus/${s.statusId}`;
+        }
         const res = await fetch(
-          `http://192.168.1.253:8594/api/tickets/bystatus/${status.statusId}`
+          url,
+          { headers: { "ngrok-skip-browser-warning": "true" } }
         );
         const json = await res.json();
-        ticketData[status.statusId] = json.data || [];
+        group[s.statusId] = json.data || [];
       }
-      setTicketsByStatus(ticketData);
-    } catch (err) {
-      console.error("Error fetching:", err);
-    } finally {
-      setLoading(false);
+      setTicketsByStatus(group);
     }
+    if (statuses.length > 0) {
+      fetchTickets();
+    }
+  }, [statuses, reloadKey]);
+
+  // Fetch all users
+  useEffect(() => {
+    async function fetchAllUsers() {
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/Eticketing/getAllUsers`,
+        { headers: { "ngrok-skip-browser-warning": "true" } }
+      );
+      const json = await res.json();
+      if (json.status === "00" && Array.isArray(json.data)) {
+        setAllUsers(json.data);
+      }
+    }
+    fetchAllUsers();
   }, []);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  // Map userId → display name
+  const userMap = useMemo(() => {
+    const m = {};
+    allUsers.forEach((u) => {
+      m[u.userId] =
+        u.username || u.displayName || u.email || `#${u.userId}`;
+    });
+    return m;
+  }, [allUsers]);
 
-  // Move ticket with ← →
-  const moveTicket = async (ticketNo, targetIndex) => {
-    if (targetIndex < 0 || targetIndex >= statuses.length) return;
-    const targetStatusId = statuses[targetIndex].statusId;
-    await updateStatus(ticketNo, targetStatusId);
-  };
-
-  // ✅ Change status (dropdown)
-  const changeStatus = async (ticket, newStatusId) => {
-    if (parseInt(newStatusId) === 2) {
-      // Special case: assign when moving to status 2 ("New")
-      try {
-        await fetch(
-          `http://192.168.1.253:8594/api/tickets/assign/${ticket.ticketNo}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              assigneeId: 12,
-              actorUserId: 12,
-            }),
-          }
-        );
-        console.log(
-          `Ticket ${ticket.ticketNo} assigned when moved to status 2`
-        );
-      } catch (err) {
-        console.error("Error assigning ticket:", err);
-      }
-    } else {
-      await updateStatus(ticket.ticketNo, newStatusId);
-    }
-
-    fetchData(); // Refresh board
-  };
-
-  // ✅ Helper to update status
-  const updateStatus = async (ticketNo, statusId) => {
-    try {
+  // Assign ticket to one or more users + progress status to “In progress” (statusId = 2)
+  async function assignTicket(ticket, assigneeIds) {
+    for (const id of assigneeIds) {
       await fetch(
-        `http://192.168.1.253:8594/api/tickets/updatestatus/${ticketNo}`,
+        `${process.env.REACT_APP_API_URL}/api/tickets/assign/${ticket.ticketId}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ statusId }),
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+          body: JSON.stringify({
+            assigneeId: id,
+            actorUserId: currentUserId,
+          }),
         }
       );
-      console.log(`Ticket ${ticketNo} moved to status ${statusId}`);
-    } catch (err) {
-      console.error("Error updating status:", err);
     }
-  };
+    await fetch(
+      `${process.env.REACT_APP_API_URL}/api/tickets/progress/${ticket.ticketId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
+        body: JSON.stringify({
+          statusId: 2,
+          actorUserId: currentUserId,
+        }),
+      }
+    );
+    setReloadKey((k) => k + 1);
+  }
 
-  if (loading) return <p className="text-center py-4">Loading board...</p>;
+  // Move ticket to another status
+  async function moveTicket(ticket, newStatusId) {
+    await fetch(
+      `${process.env.REACT_APP_API_URL}/api/tickets/progress/${ticket.ticketId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
+        body: JSON.stringify({
+          statusId: newStatusId,
+          actorUserId: currentUserId,
+        }),
+      }
+    );
+    setReloadKey((k) => k + 1);
+  }
+
+  // Delete a status
+  async function deleteStatus(statusId) {
+    await fetch(
+      `${process.env.REACT_APP_API_URL}/api/statuses/deleteStatus/${statusId}`,
+      { method: "DELETE" }
+    );
+    setReloadKey((k) => k + 1);
+  }
+
+  // Add a new status
+  async function addStatus() {
+    if (!newStatusName.trim()) return;
+    await fetch(`${process.env.REACT_APP_API_URL}/api/statuses`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      body: JSON.stringify({
+        statusName: newStatusName,
+        isTerminal: false,
+      }),
+    });
+    setNewStatusName("");
+    setShowAddModal(false);
+    setReloadKey((k) => k + 1);
+  }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 p-4">
-      {statuses.map((status, idx) => (
-        <div
-          key={status.statusId}
-          className="bg-gray-100 rounded-xl shadow-md flex flex-col"
+    <div className="m-8 bg-green-600 rounded-xl px-4 pt-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-white text-2xl font-bold mx-2 px-3">
+          Ticket Categories
+        </h2>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center gap-2 px-3 py-2 bg-white text-green-700 rounded shadow hover:bg-gray-100"
         >
-          {/* Column Header */}
-          <div className="flex items-center justify-between bg-gray-200 p-3 rounded-t-xl">
-            <h2 className="font-semibold text-sm">{status.statusName}</h2>
-            <button className="text-blue-500 hover:text-blue-700">
-              <FaPlus />
-            </button>
-          </div>
+          <FaPlus /> Add Column
+        </button>
+      </div>
 
-          {/* Column Body */}
-          <div className="flex-1 p-3 space-y-2 overflow-y-auto max-h-[70vh]">
-            {ticketsByStatus[status.statusId]?.length > 0 ? (
-              ticketsByStatus[status.statusId].map((ticket) => (
-                <Ticket
-                  key={ticket.ticketNo}
-                  ticket={ticket}
-                  stepIndex={idx}
-                  steps={statuses}
-                  moveTicket={moveTicket}
-                  changeStatus={changeStatus}
-                  onViewMore={(t) => alert(`View ticket ${t.ticketNo}`)}
-                  step={status.statusName}
-                />
-              ))
-            ) : (
-              <p className="text-xs text-gray-400 italic">No tickets</p>
-            )}
-          </div>
-        </div>
-      ))}
+      <div className="flex justify-start py-4 bg-green-600 w-full min-h-screen overflow-x-auto rounded-md shadow-xl space-x-3">
+        {statuses.map((s) => (
+          <Column
+            key={s.statusId}
+            statusName={s.statusName}
+            statusId={s.statusId}
+            tickets={ticketsByStatus[s.statusId] || []}
+            moveTicket={moveTicket}
+            assignTicket={assignTicket}
+            deleteStatus={deleteStatus}
+            allUsers={allUsers}
+            userMap={userMap}
+            statuses={statuses}
+          />
+        ))}
+      </div>
+
+      {showAddModal && (
+        <AddStatusModal
+          newStatusName={newStatusName}
+          onNameChange={setNewStatusName}
+          onClose={() => setShowAddModal(false)}
+          onAdd={addStatus}
+        />
+      )}
     </div>
   );
 }

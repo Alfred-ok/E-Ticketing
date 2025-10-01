@@ -11,10 +11,10 @@ import Departments from "./pages/Departments/Departments";
 import TicketCategories from "./pages/Ticket/Ticket";
 import TicketPriorities from "./pages/Priority/priority";
 import Statuses from "./pages/Status/Status";
-import TicketTracker from "./pages/TicketTracker/TicketTracker";
+//import TicketTracker from "./pages/TicketTracker/TicketTracker";
 import ClosedTicket from "./pages/Closedticket/ClosedTicket";
-import TaskBoard from "./pages/TicketTracker/TaskBoard";
 import Inventory from "./pages/Inventory/Inventory";
+import TaskBoard from "./pages/TicketTracker/TaskBoard";
 
 
 export default function App() {
@@ -32,7 +32,8 @@ export default function App() {
         <Route path="/ticket" element={<DashboardLayout><TicketCategories/></DashboardLayout>} />
         <Route path="/priority" element={<DashboardLayout><TicketPriorities/></DashboardLayout>} />
         <Route path="/status" element={<DashboardLayout><Statuses/></DashboardLayout>} />
-        <Route path="/ticketstracker" element={<DashboardLayout><TicketTracker/></DashboardLayout>} />
+        {/* <Route path="/ticketstracker" element={<DashboardLayout><TicketTracker/></DashboardLayout>} /> */}
+        <Route path="/ticketstracker" element={<DashboardLayout><TaskBoard/></DashboardLayout>} />
         <Route path="/closedticket" element={<DashboardLayout><ClosedTicket/></DashboardLayout>} />
         <Route path="/inventory" element={<DashboardLayout><Inventory/></DashboardLayout>} />
       </Routes>

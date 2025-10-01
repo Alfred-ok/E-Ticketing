@@ -1,21 +1,30 @@
-import React from "react";
+import { FaTrash } from "react-icons/fa";
 import Ticket from "./Ticket";
 
-export default function Column({ step, tickets, stepIndex, steps, moveTicket, onViewMore, assignTicket }) {
+export default function Column({
+  statusName, statusId, tickets,
+  moveTicket, assignTicket, deleteStatus,
+  allUsers, userMap, statuses
+}) {
   return (
-    <div className="bg-gray-100 rounded-lg shadow-md p-4 w-72 min-h-[500px] flex flex-col">
-      <h3 className="text-lg font-semibold mb-4 text-green-800">{step}</h3>
+    <div className="bg-gray-100 rounded-lg shadow-2xl p-4 min-w-[250px] min-h-[300px] flex flex-col ">
+      <div className="flex justify-between items-center mb-4 bg-green-600 p-3 rounded-lg shadow-lg">
+        <h3 className="text-lg font-semibold text-green-100">{statusName}</h3>
+        <button onClick={() => deleteStatus(statusId)} className="text-red-50 hover:text-red-600">
+          <FaTrash />
+        </button>
+      </div>
       <div className="flex-1 overflow-y-auto">
         {tickets.map((ticket) => (
           <Ticket
-            key={ticket.id}
+            key={ticket.ticketId}
             ticket={ticket}
-            stepIndex={stepIndex}
-            steps={steps}
+            statusId={statusId}
             moveTicket={moveTicket}
-            onViewMore={onViewMore}
-            step={step}
             assignTicket={assignTicket}
+            allUsers={allUsers}
+            userMap={userMap}
+            statuses={statuses}
           />
         ))}
       </div>
