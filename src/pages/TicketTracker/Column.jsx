@@ -7,7 +7,7 @@ export default function Column({
   allUsers, userMap, statuses
 }) {
   return (
-    <div className="bg-gray-100 rounded-lg shadow-2xl p-4 min-w-[250px] min-h-[300px] flex flex-col ">
+    <div className="bg-gray-100 rounded-lg shadow-2xl p-4 min-w-[250px] flex flex-col ">
       <div className="flex justify-between items-center mb-4 bg-green-600 p-3 rounded-lg shadow-lg">
         <h3 className="text-lg font-semibold text-green-100">{statusName}</h3>
         <button onClick={() => deleteStatus(statusId)} className="text-red-50 hover:text-red-600">

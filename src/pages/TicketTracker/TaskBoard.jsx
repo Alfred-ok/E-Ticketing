@@ -19,10 +19,12 @@ export default function TaskBoard() {
 
   
   const savedResponse = JSON.parse(localStorage.getItem("loginResponse"));
+  console.log(savedResponse);
   const departmentId = savedResponse?.data?.departmentId; //department Id
   const role = savedResponse?.data?.role; //role
+  const userId = savedResponse?.data?.userId;
 
-  console.log(departmentId, role);
+  console.log(departmentId, role, userId);
 
   // Fetch statuses
   useEffect(() => {
@@ -43,10 +45,12 @@ export default function TaskBoard() {
       for (const s of statuses) {
         let url;
 
-        if (role === "Admin" || role === "user") {
+        if (role === "Admin" ) {
           // Use department-based API
           url = `${process.env.REACT_APP_API_URL}/api/tickets/bystatus/${s.statusId}/department/${departmentId}`;
-        } else {
+        } else if(role === "user"){
+          url =`${process.env.REACT_APP_API_URL}/api/tickets/bystatus/${s.statusId}/department/${departmentId}/requester/${userId }`
+        }else {
           // Default API
           url = `${process.env.REACT_APP_API_URL}/api/tickets/bystatus/${s.statusId}`;
         }

@@ -260,7 +260,7 @@ export default function Dashboard() {
     const fetchTickets = async () => {
       try {
         const res = await fetch(
-          "https://c35d6ec2f0cc.ngrok-free.app/api/tickets/listTickets",{
+          `${process.env.REACT_APP_API_URL}/api/tickets/listTickets`,{
             headers: {
               "ngrok-skip-browser-warning": "true",
             },

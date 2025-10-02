@@ -187,7 +187,8 @@ export default function Sidebar() {
     superAdmin: {
       operations: [
         { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
-        { to: "/tickets", label: "Tickets", icon: <Ticket size={18} /> },
+        { to: "/ticketReport", label: "Ticket Report", icon: <Ticket size={18} /> },
+        { to: "/ticketTimeline", label: "Ticket Timeline", icon: <Ticket size={18} /> },
         { to: "/tickets/create", label: "Issue Ticket", icon: <PlusCircle size={18} /> },
         { to: "/ticketstracker", label: "Ticket Tracker", icon: <PlusCircle size={18} /> },
         //{ to: "/closedticket", label: "Closed Ticket", icon: <PlusCircle size={18} /> },
@@ -205,7 +206,7 @@ export default function Sidebar() {
     Admin: {
       operations: [
         { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
-        { to: "/tickets", label: "Tickets", icon: <Ticket size={18} /> },
+        { to: "/ticketReport", label: "Ticket Report", icon: <Ticket size={18} /> },
         { to: "/ticketstracker", label: "Ticket Tracker", icon: <PlusCircle size={18} /> },
       ],
       setup: [
@@ -218,7 +219,7 @@ export default function Sidebar() {
         { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
         { to: "/tickets/create", label: "Issue Ticket", icon: <PlusCircle size={18} /> },
         { to: "/ticketstracker", label: "Ticket Tracker", icon: <PlusCircle size={18} /> },
-        { to: "/tickets", label: "Tickets", icon: <Ticket size={18} /> },
+        { to: "/ticketReport", label: "Ticket Report", icon: <Ticket size={18} /> },
         
       ],
       setup: [],

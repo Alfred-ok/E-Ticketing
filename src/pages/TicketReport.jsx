@@ -19,7 +19,7 @@ import {
   FaFlag,
 } from "react-icons/fa";
 
-export default function Tickets() {
+export default function TicketReport() {
   const [tickets, setTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,10 +37,26 @@ export default function Tickets() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  const savedResponse = JSON.parse(localStorage.getItem("loginResponse"));
+  console.log(savedResponse);
+  const departmentId = savedResponse?.data?.departmentId; //department Id
+  const role = savedResponse?.data?.role; //role
+
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/tickets/listTickets`,{
+        let apiUrl = "";
+
+        if (role === "Admin") {
+          apiUrl = `${process.env.REACT_APP_API_URL}/api/tickets/findBydepartmentId?departmentId=${departmentId}`;
+        } else if (role === "user") {
+          const requesterUserId = savedResponse?.data?.userId;
+          apiUrl = `${process.env.REACT_APP_API_URL}/api/tickets/listTicketsBYUSERID?requesterUserId=${requesterUserId}`;
+        } else {
+          // superadmin fallback
+          apiUrl = `${process.env.REACT_APP_API_URL}/api/tickets/listTickets`;
+        }
+        const res = await fetch(apiUrl,{
           headers: {
             "ngrok-skip-browser-warning": "true"
           }
@@ -170,7 +186,7 @@ export default function Tickets() {
   return (
     <div className="p-6 m-8 bg-white rounded-xl shadow-xl">
       <h1 className="text-xl font-bold mb-6 py-4 px-5 bg-green-600 rounded-lg text-white">
-        Tickets
+        Ticket Reports
       </h1>
       {/* Export Buttons */}
       <div className="flex gap-4 mb-4">
@@ -249,6 +265,7 @@ export default function Tickets() {
                 <th className="p-3 text-left">Status</th>
                 <th className="p-3 text-left">Priority</th>
                 <th className="p-3 text-left">Created</th>
+                <th className="p-3 text-left">dueAt</th>
                 <th className="p-3 text-left">Actions</th>
               </tr>
             </thead>
@@ -261,6 +278,15 @@ export default function Tickets() {
                   <td className="p-3">{ticket.priority}</td>
                   <td className="p-3">
                     {new Date(ticket.reportedAt).toLocaleString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
+                  <td className="p-3">
+                    {new Date(ticket.dueAt).toLocaleString("en-GB", {
                       day: "2-digit",
                       month: "short",
                       year: "numeric",
