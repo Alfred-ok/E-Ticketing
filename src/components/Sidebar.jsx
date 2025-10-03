@@ -207,7 +207,9 @@ export default function Sidebar() {
       operations: [
         { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
         { to: "/ticketReport", label: "Ticket Report", icon: <Ticket size={18} /> },
+        { to: "/ticketTimeline", label: "Ticket Timeline", icon: <Ticket size={18} /> },
         { to: "/ticketstracker", label: "Ticket Tracker", icon: <PlusCircle size={18} /> },
+        
       ],
       setup: [
         { to: "/department", label: "Department", icon: <Layers size={18} /> },
@@ -219,6 +221,7 @@ export default function Sidebar() {
         { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
         { to: "/tickets/create", label: "Issue Ticket", icon: <PlusCircle size={18} /> },
         { to: "/ticketstracker", label: "Ticket Tracker", icon: <PlusCircle size={18} /> },
+        { to: "/ticketTimeline", label: "Ticket Timeline", icon: <Ticket size={18} /> },
         { to: "/ticketReport", label: "Ticket Report", icon: <Ticket size={18} /> },
         
       ],
