@@ -465,8 +465,11 @@ export default function TicketTimeline() {
 
   return (
     <div className="p-6 m-8 bg-white rounded-xl shadow-xl overflow-x-auto">
+    <div className="flex justify-between items-center mb-6 py-4 px-5 bg-green-600 rounded-lg text-white">
+        <h2 className="text-2xl font-bold">Ticket Timeline</h2>
+      </div>
       {/* Navigation */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 mx-8">
         <button
           onClick={prevMonth}
           className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
