@@ -56,7 +56,7 @@ export default function TicketReport() {
           // superadmin fallback
           apiUrl = `${process.env.REACT_APP_API_URL}/api/tickets/listTickets`;
         }
-        const res = await fetch(apiUrl,{
+        const res = await fetch(apiUrl, {
           headers: {
             "ngrok-skip-browser-warning": "true"
           }
@@ -77,7 +77,7 @@ export default function TicketReport() {
     };
 
     fetchTickets();
-  }, []);
+  }, [departmentId, role]);
 
   // Apply filters + search
   useEffect(() => {
@@ -116,42 +116,42 @@ export default function TicketReport() {
 
   // 📌 Export to PDF
   const exportPDF = () => {
-  const doc = new jsPDF();
-  doc.text("Tickets Report", 14, 16);
+    const doc = new jsPDF();
+    doc.text("Tickets Report", 14, 16);
 
-  autoTable(doc, {   // ✅ use autoTable function, not doc.autoTable
-    startY: 20,
-    head: [["Ticket No", "Title","Description","Category","Status", "Priority", "Requester","Department","Assignee",/*"Location",*/"Reported At",/*"Deadline Time","Resolved Time",*/"Closed Time"]],
-    body: filteredTickets.map((t) => [
-      t.ticketNo,
-      t.title,
-      t.description,
-      t.category,
-      t.status,
-      t.priority,
-      t.requester,
-      t.department,
-      t.assignee,
-      /*t.location,*/
-      new Date(t.reportedAt).toLocaleString(),
-      /*new Date(t.dueAt).toLocaleString(),
-      new Date(t.resolvedAt).toLocaleString(),*/
-      new Date(t.closedAt).toLocaleString(),
-    ]),
-  styles: {
-    fontSize: 7,          // shrink font slightly
-    cellPadding: 2,
-    overflow: "linebreak" // ✅ wrap text
-  },
-  headStyles: {
-    fillColor: [41, 128, 185],
-    textColor: 255,
-    fontSize: 8,
-  },
-  });
+    autoTable(doc, {   // ✅ use autoTable function, not doc.autoTable
+      startY: 20,
+      head: [["Ticket No", "Title", "Description", "Category", "Status", "Priority", "Requester", "Department", "Assignee",/*"Location",*/"Reported At",/*"Deadline Time","Resolved Time",*/"Closed Time"]],
+      body: filteredTickets.map((t) => [
+        t.ticketNo,
+        t.title,
+        t.description,
+        t.category,
+        t.status,
+        t.priority,
+        t.requester,
+        t.department,
+        t.assignee,
+        /*t.location,*/
+        new Date(t.reportedAt).toLocaleString(),
+        /*new Date(t.dueAt).toLocaleString(),
+        new Date(t.resolvedAt).toLocaleString(),*/
+        new Date(t.closedAt).toLocaleString(),
+      ]),
+      styles: {
+        fontSize: 7,          // shrink font slightly
+        cellPadding: 2,
+        overflow: "linebreak" // ✅ wrap text
+      },
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontSize: 8,
+      },
+    });
 
-  doc.save("tickets_report.pdf");
-};
+    doc.save("tickets_report.pdf");
+  };
 
   // 📌 Export to Excel
   const exportExcel = () => {
@@ -159,14 +159,14 @@ export default function TicketReport() {
       filteredTickets.map((t) => ({
         "Ticket No": t.ticketNo,
         Title: t.title,
-        Description:t.description,
-        Category:t.category,
+        Description: t.description,
+        Category: t.category,
         Status: t.status,
         Priority: t.priority,
         Requester: t.requester,
-        Assignee:t.assignee,
-        Department:t.department,
-        Location:t.location,
+        Assignee: t.assignee,
+        Department: t.department,
+        Location: t.location,
         "Reported At": new Date(t.reportedAt).toLocaleString(),
         "Deadline Time": new Date(t.dueAt).toLocaleString(),
         "Resolved Time": new Date(t.resolvedAt).toLocaleString(),
@@ -316,22 +316,20 @@ export default function TicketReport() {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((p) => p - 1)}
-                className={`px-3 py-1 rounded-lg ${
-                  currentPage === 1
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-gray-300 hover:bg-gray-400"
-                }`}
+                className={`px-3 py-1 rounded-lg ${currentPage === 1
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-300 hover:bg-gray-400"
+                  }`}
               >
                 Previous
               </button>
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((p) => p + 1)}
-                className={`px-3 py-1 rounded-lg ${
-                  currentPage === totalPages
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-gray-300 hover:bg-gray-400"
-                }`}
+                className={`px-3 py-1 rounded-lg ${currentPage === totalPages
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-300 hover:bg-gray-400"
+                  }`}
               >
                 Next
               </button>
